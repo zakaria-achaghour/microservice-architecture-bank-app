@@ -18,4 +18,6 @@ public class AccountRequestDto {
     private String currency;
     @NotEmpty
     private AccountType accountType;
+
+    private Long customerId;
 }

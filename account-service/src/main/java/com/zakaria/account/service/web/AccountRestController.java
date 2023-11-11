@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class AccountRestController {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
     })
-    public ResponseEntity<AccountResponseDto> save(@RequestBody AccountRequestDto accountRequestDto){
+    public ResponseEntity<AccountResponseDto> save(@Valid @RequestBody AccountRequestDto accountRequestDto){
         return new ResponseEntity<>(accountService.save(accountRequestDto), HttpStatus.CREATED);
     }
 
@@ -52,7 +53,7 @@ public class AccountRestController {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
     })
-    public ResponseEntity<?> updateAccount(@RequestBody AccountRequestDto request, @PathVariable String id){
+    public ResponseEntity<?> updateAccount(@Valid @RequestBody AccountRequestDto request, @PathVariable String id){
         try {
             AccountResponseDto accountResponseDto = accountService.update(request, id);
             return ResponseEntity.ok(accountResponseDto);

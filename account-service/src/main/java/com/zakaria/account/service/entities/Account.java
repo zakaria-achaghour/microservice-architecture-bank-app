@@ -1,10 +1,8 @@
 package com.zakaria.account.service.entities;
 
 import com.zakaria.account.service.enums.AccountType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import com.zakaria.account.service.model.Customer;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -22,4 +20,7 @@ public class Account {
     private String currency;
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
+    @Transient
+    private Customer customer;
+    private Long customerId;
 }
