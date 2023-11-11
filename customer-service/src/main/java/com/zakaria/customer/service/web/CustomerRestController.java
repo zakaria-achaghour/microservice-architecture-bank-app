@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class CustomerRestController {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
     })
-    public ResponseEntity<CustomerResponseDto> save(@RequestBody CustomerRequestDto CustomerRequestDto){
+    public ResponseEntity<CustomerResponseDto> save(@Valid @RequestBody CustomerRequestDto CustomerRequestDto){
         return new ResponseEntity<>(customerService.save(CustomerRequestDto), HttpStatus.CREATED);
     }
 
@@ -53,7 +54,7 @@ public class CustomerRestController {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
     })
-    public ResponseEntity<?> updateCustomer(@RequestBody CustomerRequestDto request, @PathVariable Long id){
+    public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerRequestDto request, @PathVariable Long id){
         try {
             CustomerResponseDto CustomerResponseDto = customerService.update(request, id);
             return ResponseEntity.ok(CustomerResponseDto);
