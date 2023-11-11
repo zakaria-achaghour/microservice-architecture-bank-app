@@ -1,10 +1,12 @@
 package com.zakaria.account.service.services.Impl;
 
+import com.zakaria.account.service.clients.CustomerRestClient;
 import com.zakaria.account.service.dtos.AccountRequestDto;
 import com.zakaria.account.service.dtos.AccountResponseDto;
 import com.zakaria.account.service.entities.Account;
 import com.zakaria.account.service.exceptions.AccountNotFoundException;
 import com.zakaria.account.service.mappers.AccountMapper;
+import com.zakaria.account.service.model.Customer;
 import com.zakaria.account.service.repositories.AccountRepository;
 import com.zakaria.account.service.services.AccountService;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class AccountServiceImpl implements AccountService {
 
     private AccountRepository accountRepository;
+    private CustomerRestClient customerRestClient;
     private AccountMapper accountMapper;
     @Override
     public AccountResponseDto save(AccountRequestDto request) {
@@ -42,6 +45,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResponseDto getAccountById(String id) throws AccountNotFoundException {
         Account account = accountRepository.findById(id).orElse(null);
+        Customer customer = customerRestClient.findCustomerById(account.getCustomerId());
+        account.setCustomer(customer);
         if (account==null) throw new AccountNotFoundException(String.format("Account Not Found with id :%s",id));
         return accountMapper.toDto(account);
     }
