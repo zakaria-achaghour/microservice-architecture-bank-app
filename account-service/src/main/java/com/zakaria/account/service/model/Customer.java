@@ -8,6 +8,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter @Setter @Builder
 public class Customer {
+    private Long id;
     private String name;
     private String email;
     private Date createdAt;
