@@ -39,7 +39,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountResponseDto> listAccounts() {
-        return accountRepository.findAll().stream().map(accountMapper::toDto).collect(Collectors.toList());
+        List<Account> accounts = accountRepository.findAll();
+        accounts.forEach(account -> {
+            account.setCustomer(customerRestClient.findCustomerById(account.getCustomerId()));
+        });
+        return accounts.stream().map(accountMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
