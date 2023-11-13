@@ -4,6 +4,7 @@ package com.zakaria.account.service.web;
 import com.zakaria.account.service.dtos.AccountRequestDto;
 import com.zakaria.account.service.dtos.AccountResponseDto;
 import com.zakaria.account.service.exceptions.AccountNotFoundException;
+import com.zakaria.account.service.exceptions.ResourceNotFoundException;
 import com.zakaria.account.service.services.AccountService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,12 +40,12 @@ public class AccountRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAccountById(@PathVariable String id){
+    public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable String id){
         try {
             AccountResponseDto account = accountService.getAccountById(id);
             return ResponseEntity.ok(account);
-        } catch (AccountNotFoundException e) {
-            return ResponseEntity.internalServerError().body(new ErrorMessage(e.getMessage()));
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -58,7 +59,7 @@ public class AccountRestController {
             AccountResponseDto accountResponseDto = accountService.update(request, id);
             return ResponseEntity.ok(accountResponseDto);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ErrorMessage(e.getMessage()));
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
     @DeleteMapping("/{id}")
@@ -71,7 +72,7 @@ public class AccountRestController {
             accountService.deleteAccount(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ErrorMessage(e.getMessage()));
+            return  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

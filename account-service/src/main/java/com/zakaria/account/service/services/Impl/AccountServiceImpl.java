@@ -5,6 +5,7 @@ import com.zakaria.account.service.dtos.AccountRequestDto;
 import com.zakaria.account.service.dtos.AccountResponseDto;
 import com.zakaria.account.service.entities.Account;
 import com.zakaria.account.service.exceptions.AccountNotFoundException;
+import com.zakaria.account.service.exceptions.ResourceNotFoundException;
 import com.zakaria.account.service.mappers.AccountMapper;
 import com.zakaria.account.service.model.Customer;
 import com.zakaria.account.service.repositories.AccountRepository;
@@ -47,18 +48,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponseDto getAccountById(String id) throws AccountNotFoundException {
+    public AccountResponseDto getAccountById(String id) throws ResourceNotFoundException {
         Account account = accountRepository.findById(id).orElse(null);
         Customer customer = customerRestClient.findCustomerById(account.getCustomerId());
         account.setCustomer(customer);
-        if (account==null) throw new AccountNotFoundException(String.format("Account Not Found with id :%s",id));
+        if (account==null) throw new ResourceNotFoundException(String.format("Account Not Found with id :%s",id));
         return accountMapper.toDto(account);
     }
 
     @Override
-    public AccountResponseDto update(AccountRequestDto requestDTO, String id) throws AccountNotFoundException {
+    public AccountResponseDto update(AccountRequestDto requestDTO, String id) throws ResourceNotFoundException {
         Account account = accountRepository.findById(id).orElse(null);
-        if (account==null) throw new AccountNotFoundException(String.format("Account Not Found with id :%s", id));
+        if (account==null) throw new ResourceNotFoundException(String.format("Account Not Found with id :%s", id));
         account.setBalance(requestDTO.getBalance());
         if(requestDTO.getCurrency() != null) account.setCurrency(requestDTO.getCurrency());
         if(requestDTO.getAccountType() != null) account.setAccountType(requestDTO.getAccountType());
@@ -67,9 +68,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteAccount(String id) throws AccountNotFoundException {
+    public void deleteAccount(String id) throws ResourceNotFoundException {
         Account account = accountRepository.findById(id).orElse(null);
-        if (account==null) throw new AccountNotFoundException(String.format("Account Not Found with id :%s",id));
+        if (account==null) throw new ResourceNotFoundException(String.format("Account Not Found with id :%s",id));
         accountRepository.deleteById(id);
     }
 }
