@@ -1,3 +1,4 @@
+version: '3.1'
 services:
   discovery-service:
     build: ./discovery-service
@@ -26,17 +27,19 @@ services:
       interval: 10s
   customer-service-db:
     image: 'postgres:latest'
+    restart: always
     container_name: customer-service-bank-db
     environment:
-      - 'POSTGRES_DB=customer-db'
-      - 'POSTGRES_PASSWORD=root'
-      - 'POSTGRES_USER=root'
+      POSTGRES_DB: customer-db
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
     ports:
       - '5434:5432'
-    expose:
-      - '5434'
     volumes:
       - customer-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 10s
   customer-service:
     build: ./customer-service
     container_name: customer-service-bank
@@ -47,7 +50,13 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://config-service:9999
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://customer-service-db:5434/customer-db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
+      customer-service-db:
+        condition: service_healthy
       config-service:
         condition: service_healthy
     healthcheck:
@@ -55,15 +64,14 @@ services:
       interval: 10s
   account-service-db:
     image: 'postgres:latest'
+    restart: always
     container_name: account-service-bank-db
     environment:
-      - 'POSTGRES_DB=account-db'
-      - 'POSTGRES_PASSWORD=root'
-      - 'POSTGRES_USER=root'
+      POSTGRES_DB: account-db
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
     ports:
       - '5435:5432'
-    expose:
-      - '5435'
     volumes:
       - account-db-data:/var/lib/postgresql/data
   account-service:
