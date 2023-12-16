@@ -25,24 +25,6 @@ services:
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
       interval: 10s
-  customer-service-db:
-    image: 'postgres:latest'
-    container_name: customer-service-bank-db
-    environment:
-      POSTGRES_DB: customer-db
-      POSTGRES_PASSWORD: root
-      POSTGRES_USER: root
-      PGDATA: /data/postgres
-    volumes:
-      - ./postgres-customer:/data/postgres
-    expose:
-      - "5431"
-    ports:
-      - "5431:5431"
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root"]
-      interval: 10s
   customer-service:
     build: ./customer-service
     container_name: customer-service-bank
@@ -53,32 +35,12 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://config-service:9999
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://customer-service-db:5431/customer-db
     depends_on:
-      customer-service-db:
-        condition: service_healthy
       config-service:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
       interval: 10s
-  account-service-db:
-    image: 'postgres:latest'
-    container_name: account-service-bank-db
-    environment:
-      POSTGRES_PASSWORD: root
-      POSTGRES_USER: root
-      POSTGRES_DB: account-db
-      PGDATA: /data/postgres
-    volumes:
-      - ./postgres-account:/data/postgres
-    expose:
-      - "5433"
-    ports:
-      - "5433:5432"
-    restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U root" ]
   account-service:
     build: ./account-service
     container_name: account-service-bank
